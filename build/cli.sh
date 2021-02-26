@@ -43,7 +43,7 @@ function build_and_upload() {
     rm cortex.zip
   fi
   echo "Done ✓"
-  rm cortex
+  # rm cortex
 }
 
 function build_python {
@@ -61,8 +61,8 @@ function build_python {
   popd
 }
 
-build_and_upload darwin
+# build_and_upload darwin
 
 build_and_upload linux
 
-build_python
+# build_python
