@@ -144,10 +144,14 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 		}
 		if api.Compute.GPU > 0 {
 			resources.DeviceRequests = []container.DeviceRequest{{
-				Count: -1,
+				/* Count: 4, */
 				Capabilities: [][]string{
 					{"gpu"},
 				},
+				/* DeviceIDs: []string{ */
+				/* 	"0", "1", "2", "3", */
+				/* }, */
+                DeviceIDs: strings.Split(api.Compute.LocalGPUs, ","),
 			}}
 		}
 	}

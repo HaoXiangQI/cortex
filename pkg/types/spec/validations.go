@@ -367,6 +367,12 @@ func computeValidation(provider types.ProviderType) *cr.StructFieldValidation {
 						GreaterThanOrEqualTo: pointer.Int64(0),
 					},
 				},
+				{
+					StructField: "LocalGPUs",
+					StringValidation: &cr.StringValidation{
+						Default: "0",
+					},
+				},
 			},
 		},
 	}

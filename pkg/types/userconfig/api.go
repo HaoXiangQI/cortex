@@ -101,6 +101,7 @@ type Compute struct {
 	CPU *k8s.Quantity `json:"cpu" yaml:"cpu"`
 	Mem *k8s.Quantity `json:"mem" yaml:"mem"`
 	GPU int64         `json:"gpu" yaml:"gpu"`
+	LocalGPUs string  `json:"local_gpus" yaml:"local_gpus"`
 	Inf int64         `json:"inf" yaml:"inf"`
 }
 
