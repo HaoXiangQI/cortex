@@ -53,20 +53,20 @@ if [ "$CORTEX_PROVIDER" != "local" ]; then
 fi
 
 # execute script if present in project's directory
-if [ -f "/mnt/project/dependencies.sh" ]; then
+if [ -f "/mnt/project/${CORTEX_DEPENDENCIES_SHELL}" ]; then
     eval $source_env_file_cmd
-    bash -e /mnt/project/dependencies.sh
+    bash -e "/mnt/project/${CORTEX_DEPENDENCIES_SHELL}"
 fi
 
 # install from conda-packages.txt
-if [ -f "/mnt/project/conda-packages.txt" ]; then
+if [ -f "/mnt/project/${CORTEX_DEPENDENCIES_CONDA}" ]; then
     py_version_cmd='echo $(python -c "import sys; v=sys.version_info[:2]; print(\"{}.{}\".format(*v));")'
     old_py_version=$(eval $py_version_cmd)
 
     # look for packages in defaults and then conda-forge to improve chances of finding the package (specifically for python reinstalls)
     conda config --append channels conda-forge
 
-    conda install -y --file /mnt/project/conda-packages.txt
+    conda install -y --file "/mnt/project/${CORTEX_DEPENDENCIES_CONDA}"
 
     new_py_version=$(eval $py_version_cmd)
 
@@ -87,8 +87,8 @@ if [ -f "/mnt/project/conda-packages.txt" ]; then
 fi
 
 # install pip packages
-if [ -f "/mnt/project/requirements.txt" ]; then
-    pip --no-cache-dir install -r /mnt/project/requirements.txt
+if [ -f "/mnt/project/${CORTEX_DEPENDENCIES_PIP}"  ]; then
+    pip --no-cache-dir install -r "/mnt/project/${CORTEX_DEPENDENCIES_PIP}"
 fi
 
 # good pages to read about s6-overlay used in create_s6_service and create_s6_task
