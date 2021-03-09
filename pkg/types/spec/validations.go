@@ -281,6 +281,13 @@ func networkingValidation(
 				MaxLength: 1000, // no particular reason other than it works
 			},
 		},
+		{
+			StructField: "HostName",
+			StringPtrValidation: &cr.StringPtrValidation{
+				Required: true,
+				MaxLength: 100,
+			},
+		},
 	}
 
 	if provider == types.AWSProviderType || provider == types.LocalProviderType {

@@ -34,6 +34,7 @@ import (
 	"github.com/docker/docker/api/types"
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+    "github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/go-connections/nat"
@@ -52,6 +53,8 @@ const (
 	_cacheDir                  = "/mnt/cache"
 	_modelDir                  = "/mnt/model"
 	_workspaceDir              = "/mnt/workspace"
+    _apiContainerNetworkType   = "bridge"
+    _apiContainerNetworkName   = "ai_service_proxy"
 )
 
 type ModelCaches []*spec.LocalModelCache
@@ -206,6 +209,7 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 			"apiName":     api.Name,
 		},
 	}
+    // TODO: the last parameter is container name
 	containerInfo, err := docker.MustDockerClient().ContainerCreate(context.Background(), containerConfig, hostConfig, nil, "")
 	if err != nil {
 		if strings.Contains(err.Error(), "bind source path does not exist") {
@@ -224,6 +228,48 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 			},
 		}, "/")
 	}
+
+    // Netwrok get or create
+    networkResources, err := docker.MustDockerClient().NetworkList(context.Background(), dockertypes.NetworkListOptions{})
+	if err != nil {
+		return errors.Wrap(err, api.Identify())
+	}
+
+    aiproxyNetwork := _apiContainerNetworkName
+    aiproxynetworkID := ""
+    aiproxyNetworkExists := false
+	for _, net := range networkResources {
+		if net.Name == aiproxyNetwork {
+			aiproxyNetworkExists = true
+            aiproxynetworkID = net.ID
+		}
+	}
+
+	// Create a bridge network if not exists 
+	if !aiproxyNetworkExists {
+        networkCreateOptions := dockertypes.NetworkCreate{
+            Driver: _apiContainerNetworkType,
+            Attachable: true,
+            CheckDuplicate: true,
+        }
+        networkResponse, err := docker.MustDockerClient().NetworkCreate(context.Background(), aiproxyNetwork, networkCreateOptions)
+
+		if err != nil {
+		    return errors.Wrap(err, api.Identify())
+		}
+        aiproxynetworkID = networkResponse.ID
+	}
+
+    // Connect!
+    endpointSettings := network.EndpointSettings{
+        Aliases: []string{
+            *api.Networking.HostName,
+        },
+    }
+    err = docker.MustDockerClient().NetworkConnect(context.Background(), aiproxynetworkID, containerInfo.ID, &endpointSettings)
+    if err != nil {
+        return errors.Wrap(err, api.Identify())
+    }
 
 	err = docker.MustDockerClient().ContainerStart(context.Background(), containerInfo.ID, dockertypes.ContainerStartOptions{})
 	if err != nil {
