@@ -100,7 +100,8 @@ type Dependencies struct {
 
 type Networking struct {
 	Endpoint   *string        `json:"endpoint" yaml:"endpoint"`
-	HostName   *string        `json:"hostname" yaml:"hostname"`
+	NetworkName   *string     `json:"network_name" yaml:"network_name"`
+	NetworkDriver *string     `json:"network_driver" yaml:"network_driver"`
 	LocalPort  *int           `json:"local_port" yaml:"local_port"`
 	APIGateway APIGatewayType `json:"api_gateway" yaml:"api_gateway"`
 }

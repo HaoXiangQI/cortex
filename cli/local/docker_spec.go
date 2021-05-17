@@ -53,8 +53,6 @@ const (
 	_cacheDir                  = "/mnt/cache"
 	_modelDir                  = "/mnt/model"
 	_workspaceDir              = "/mnt/workspace"
-    _apiContainerNetworkType   = "bridge"
-    _apiContainerNetworkName   = "ai_service_proxy"
 )
 
 type ModelCaches []*spec.LocalModelCache
@@ -235,7 +233,7 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 		return errors.Wrap(err, api.Identify())
 	}
 
-    aiproxyNetwork := _apiContainerNetworkName
+    aiproxyNetwork := *api.Networking.NetworkName
     aiproxynetworkID := ""
     aiproxyNetworkExists := false
 	for _, net := range networkResources {
@@ -248,7 +246,7 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 	// Create a bridge network if not exists 
 	if !aiproxyNetworkExists {
         networkCreateOptions := dockertypes.NetworkCreate{
-            Driver: _apiContainerNetworkType,
+            Driver: *api.Networking.NetworkDriver,
             Attachable: true,
             CheckDuplicate: true,
         }
@@ -261,11 +259,7 @@ func deployPythonContainer(api *spec.API, awsClient *aws.Client, gcpClient *gcp.
 	}
 
     // Connect!
-    endpointSettings := network.EndpointSettings{
-        Aliases: []string{
-            *api.Networking.HostName,
-        },
-    }
+    endpointSettings := network.EndpointSettings{}
     err = docker.MustDockerClient().NetworkConnect(context.Background(), aiproxynetworkID, containerInfo.ID, &endpointSettings)
     if err != nil {
         return errors.Wrap(err, api.Identify())

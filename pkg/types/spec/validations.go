@@ -282,7 +282,14 @@ func networkingValidation(
 			},
 		},
 		{
-			StructField: "HostName",
+			StructField: "NetworkName",
+			StringPtrValidation: &cr.StringPtrValidation{
+				Required: true,
+				MaxLength: 100,
+			},
+		},
+		{
+			StructField: "NetworkDriver",
 			StringPtrValidation: &cr.StringPtrValidation{
 				Required: true,
 				MaxLength: 100,
