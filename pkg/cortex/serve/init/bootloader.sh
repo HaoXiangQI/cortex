@@ -17,16 +17,17 @@
 set -e
 
 # CORTEX_VERSION
-export EXPECTED_CORTEX_VERSION=0.25.0
 
-if [ "$CORTEX_VERSION" != "$EXPECTED_CORTEX_VERSION" ]; then
-    if [ "$CORTEX_PROVIDER" == "local" ]; then
-        echo "error: your Cortex CLI version ($CORTEX_VERSION) doesn't match your predictor image version ($EXPECTED_CORTEX_VERSION); please update your predictor image by modifying the \`image\` field in your API configuration file (e.g. cortex.yaml) and re-running \`cortex deploy\`, or update your CLI by following the instructions at https://docs.cortex.dev/"
-    else
-        echo "error: your Cortex operator version ($CORTEX_VERSION) doesn't match your predictor image version ($EXPECTED_CORTEX_VERSION); please update your predictor image by modifying the \`image\` field in your API configuration file (e.g. cortex.yaml) and re-running \`cortex deploy\`, or update your cluster by following the instructions at https://docs.cortex.dev/"
-    fi
-    exit 1
-fi
+# export EXPECTED_CORTEX_VERSION=0.25.0
+
+# if [ "$CORTEX_VERSION" != "$EXPECTED_CORTEX_VERSION" ]; then
+#     if [ "$CORTEX_PROVIDER" == "local" ]; then
+#         echo "error: your Cortex CLI version ($CORTEX_VERSION) doesn't match your predictor image version ($EXPECTED_CORTEX_VERSION); please update your predictor image by modifying the \`image\` field in your API configuration file (e.g. cortex.yaml) and re-running \`cortex deploy\`, or update your CLI by following the instructions at https://docs.cortex.dev/"
+#     else
+#         echo "error: your Cortex operator version ($CORTEX_VERSION) doesn't match your predictor image version ($EXPECTED_CORTEX_VERSION); please update your predictor image by modifying the \`image\` field in your API configuration file (e.g. cortex.yaml) and re-running \`cortex deploy\`, or update your cluster by following the instructions at https://docs.cortex.dev/"
+#     fi
+#     exit 1
+# fi
 
 mkdir -p /mnt/workspace
 mkdir -p /mnt/requests
@@ -34,6 +35,8 @@ mkdir -p /mnt/requests
 cd /mnt/project
 
 # if the container restarted, ensure that it is not perceived as ready
+# 如果容器已重新启动，请确保未将其视为已准备状态
+# 如下三个文件作用暂时未知
 rm -rf /mnt/workspace/api_readiness.txt
 rm -rf /mnt/workspace/init_script_run.txt
 rm -rf /mnt/workspace/proc-*-ready.txt

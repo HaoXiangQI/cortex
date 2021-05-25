@@ -40,12 +40,12 @@ class API:
         self.api_spec = api_spec
         self.cache_dir = cache_dir
 
-        self.id = api_spec["id"]
-        self.predictor_id = api_spec["predictor_id"]
-        self.deployment_id = api_spec["deployment_id"]
+        # self.id = api_spec["id"]
+        # self.predictor_id = api_spec["predictor_id"]
+        # self.deployment_id = api_spec["deployment_id"]
 
-        self.key = api_spec["key"]
-        self.metadata_root = api_spec["metadata_root"]
+        # self.key = api_spec["key"]
+        # self.metadata_root = api_spec["metadata_root"]
         self.name = api_spec["name"]
         self.predictor = Predictor(provider, api_spec, model_dir)
 
@@ -83,12 +83,12 @@ class API:
         except Exception as e:
             raise ValueError("unable to store class {}".format(class_name)) from e
 
-    def metric_dimensions_with_id(self):
-        return [
-            {"Name": "APIName", "Value": self.name},
-            {"Name": "PredictorID", "Value": self.predictor_id},
-            {"Name": "DeploymentID", "Value": self.deployment_id},
-        ]
+    # def metric_dimensions_with_id(self):
+    #     return [
+    #         {"Name": "APIName", "Value": self.name},
+    #         {"Name": "PredictorID", "Value": self.predictor_id},
+    #         {"Name": "DeploymentID", "Value": self.deployment_id},
+    #     ]
 
     def metric_dimensions(self):
         return [{"Name": "APIName", "Value": self.name}]
